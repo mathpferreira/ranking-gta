@@ -15,13 +15,13 @@ def main():
     top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
-    largura, altura = 500, 300
+    largura, altura = 300, 150
     img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
     try:
         font_titulo = ImageFont.truetype("arialbd.ttf", 52)  # título maior
-        font_texto = ImageFont.truetype("arialbd.ttf", 36)   # jogadores maiores
+        font_texto = ImageFont.truetype("arialbd.ttf", 32)   # jogadores maiores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
