@@ -15,7 +15,7 @@ def main():
     top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
-    largura, altura = 600, 400
+    largura, altura = 500, 300
     img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
