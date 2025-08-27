@@ -53,7 +53,7 @@ def main():
 
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    html_code = f'<img src="https://mathpferreira.github.io/ranking-gta/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
     os.makedirs("docs", exist_ok=True)
     with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
