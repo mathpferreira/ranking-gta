@@ -37,9 +37,9 @@ def main():
             draw.text(((largura - w) / 2 + dx, 30 + dy), titulo, font=font_titulo, fill=(101, 138, 106))
 
     # --- Jogadores ---
-    y = 60  # mais perto do título
+    y = 65  # mais perto do título
     cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
-    posicoes = ["1º", "2º", "3º"]
+    posicoes = ["1", "2", "3"]
 
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
@@ -51,15 +51,6 @@ def main():
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
         w = bbox[2] - bbox[0]
         x = (largura - w) / 2
-
-        # efeito glow para o 1º lugar
-        if i == 0:
-            glow_color = (255, 215, 0)  # dourado
-            for radius in range(6, 0, -1):  # várias camadas de brilho
-                draw.text((x - radius, y), texto, font=font_texto, fill=glow_color)
-                draw.text((x + radius, y), texto, font=font_texto, fill=glow_color)
-                draw.text((x, y - radius), texto, font=font_texto, fill=glow_color)
-                draw.text((x, y + radius), texto, font=font_texto, fill=glow_color)
 
         # escreve texto principal
         draw.text((x, y), texto, font=font_texto, fill=cores[i])
