@@ -55,8 +55,8 @@ def main():
 
     # Fontes
     try:
-        font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 52)
-        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 32)
+        font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 32)
+        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 22)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -77,7 +77,7 @@ def main():
     )
 
     # ---- Lista de jogadores (centralizados) ----
-    y = 50  # menos espaço entre título e lista
+    y = 60  # menos espaço entre título e lista
     cores = [
         (218, 165, 32, 255),   # ouro #DAA520
         (215, 215, 215, 255),  # prata #D7D7D7
