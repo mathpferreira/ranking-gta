@@ -4,13 +4,13 @@ import os
 from datetime import datetime
 
 def main():
-    # URL do CSV do Google Sheets (ajuste se necessário)
+    # URL do CSV do Google Sheets
     url = "https://docs.google.com/spreadsheets/d/1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw/export?format=csv&gid=0"
     response = requests.get(url)
     response.encoding = "utf-8"
     linhas = response.text.splitlines()
 
-    # Pegando apenas o Top 3 (ignora cabeçalho)
+    # Pega o Top 3 (ignora cabeçalho)
     top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
@@ -42,25 +42,22 @@ def main():
         draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
         y += 70
 
-    # Garantir que a pasta docs existe
-    docs_path = os.path.join(os.getcwd(), "docs")
-    os.makedirs(docs_path, exist_ok=True)
-
-    # Salvar imagem no docs/
-    output_path = os.path.join(docs_path, "ranking.png")
+    # Salvar imagem dentro de docs/
+    os.makedirs("docs", exist_ok=True)
+    output_path = os.path.join("docs", "ranking.png")
     img.save(output_path)
     print(f"✅ Imagem salva em {output_path}")
 
-    # Gerar embed.html dentro de docs/
-    gerar_embed(docs_path)
+    # Gerar embed.html com cache-busting
+    gerar_embed()
 
-def gerar_embed(docs_path):
+def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     html_code = f'<img src="https://mathpferreira.github.io/ranking-gta/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
-    embed_path = os.path.join(docs_path, "embed.html")
-    with open(embed_path, "w", encoding="utf-8") as f:
+    os.makedirs("docs", exist_ok=True)
+    with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
-    print(f"✅ embed.html gerado em {embed_path}")
+    print("✅ embed.html gerado em docs/")
 
 if __name__ == "__main__":
     main()
