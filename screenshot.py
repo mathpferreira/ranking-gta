@@ -20,8 +20,8 @@ def main():
     draw = ImageDraw.Draw(img)
 
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 36)  # versão bold
-        font_texto = ImageFont.truetype("arialbd.ttf", 28)
+        font_titulo = ImageFont.truetype("arialbd.ttf", 40)  # título mais grosso
+        font_texto = ImageFont.truetype("arial.ttf", 24)     # fonte mais fina pros jogadores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -31,25 +31,27 @@ def main():
     bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
     w = bbox[2] - bbox[0]
 
-    # Sombra do título
-    draw.text(((largura - w) / 2 + 2, 32), titulo, font=font_titulo, fill=(20, 20, 20))
-    draw.text(((largura - w) / 2, 30), titulo, font=font_titulo, fill=(101, 138, 106))
+    # Fake bold no título (desenha 4x para engrossar)
+    for dx in (0, 1):
+        for dy in (0, 1):
+            draw.text(((largura - w) / 2 + dx, 30 + dy), titulo, font=font_titulo, fill=(101, 138, 106))
 
     # --- Jogadores ---
-    y = 120
+    y = 100  # menos espaço entre título e lista
     cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
             continue
         nome, pontos = jogador[0], jogador[1]
-        texto = f"{nome} - {pontos} pontos"
+        texto = f"{nome} - {pontos} pts"
 
-        # Fake bold se não tiver arialbd.ttf
-        for dx in (0, 1):
-            for dy in (0, 1):
-                draw.text((80 + dx, y + dy), texto, font=font_texto, fill=cores[i])
+        # calcular largura do texto para centralizar
+        bbox = draw.textbbox((0, 0), texto, font=font_texto)
+        w = bbox[2] - bbox[0]
+        x = (largura - w) / 2
 
-        y += 50  # espaçamento menor entre linhas
+        draw.text((x, y), texto, font=font_texto, fill=cores[i])
+        y += 40  # espaçamento menor entre jogadores
 
     # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
