@@ -1,28 +1,37 @@
-name: Atualizar Ranking
+name: Update Ranking
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"  # roda a cada 30 minutos
+    - cron: "*/30 * * * *" # roda a cada 30 minutos
+  workflow_dispatch: # permite rodar manualmente
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Instalar dependências
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install pillow requests
 
-      - name: Executar script
+      - name: Run screenshot.py (gera ranking.png e embed.html)
         run: python screenshot.py
 
-      - name: Commit e push
+      - name: Commit and push changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add docs/
-          git commit -m "Atualiza ranking automático" || echo "Nada para commitar"
+          git add docs/ranking.png docs/embed.html
+          git commit -m "Atualiza ranking automático" || echo "Nenhuma mudança"
           git push
+
+      - name: Check if GitHub Pages synced
+        run: python check_pages.py
