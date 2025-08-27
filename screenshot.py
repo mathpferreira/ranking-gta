@@ -10,37 +10,47 @@ def main():
     response.encoding = "utf-8"
     linhas = response.text.splitlines()
 
-    # Pega o Top 3 (ignora cabeçalho)
-    top3 = [linha.split(",") for linha in linhas[1:4]]
+    # Exemplo de dados (Top 3 sem cabeçalho)
+linhas = [
+    "Nome,Pontos",
+    "Player1,150",
+    "Player2,120",
+    "Player3,100",
+]
+top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
     largura, altura = 600, 400
     img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
-    try:
-        font_titulo = ImageFont.truetype("arial.ttf", 36)
-        font_texto = ImageFont.truetype("arial.ttf", 28)
-    except:
-        font_titulo = ImageFont.load_default()
-        font_texto = ImageFont.load_default()
+try:
+    font_titulo = ImageFont.truetype("arial.ttf", 36)
+    font_texto = ImageFont.truetype("arial.ttf", 28)
+except:
+    font_titulo = ImageFont.load_default()
+    font_texto = ImageFont.load_default()
 
-    # Título
-    titulo = "<span style=\"color:#658a6a;text-shadow: 1px 1px 10px #658a6a;font-weight:600;\">TOP3 RANKING - EQUIPE DE EVENTOS</span>"
+    # --- Título ---
+    titulo = "TOP3 RANKING - EQUIPE DE EVENTOS"
     bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
     w = bbox[2] - bbox[0]
-    draw.text(((largura - w) / 2, 30), titulo, font=font_titulo, fill=(255, 215, 0))
 
-    # Escrever os jogadores
+    # Sombra do título (deslocada 2px em cinza escuro)
+    draw.text(((largura - w) / 2 + 2, 32), titulo, font=font_titulo, fill=(20, 20, 20))
+    # Texto principal em verde (#658a6a)
+    draw.text(((largura - w) / 2, 30), titulo, font=font_titulo, fill=(101, 138, 106))
+
+    # --- Jogadores ---
     y = 120
     medalhas = ["🥇", "🥈", "🥉"]
     for i, jogador in enumerate(top3):
-        if len(jogador) < 2:
-            continue
-        nome, pontos = jogador[0], jogador[1]
-        texto = f"{medalhas[i]} {nome} - {pontos} pts"
-        draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
-        y += 70
+    if len(jogador) < 2:
+        continue
+    nome, pontos = jogador[0], jogador[1]
+    texto = f"{medalhas[i]} {nome} - {pontos} pts"
+    draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
+    y += 70
 
     # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
