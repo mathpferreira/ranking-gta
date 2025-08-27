@@ -90,18 +90,13 @@ def main():
         w = bbox[2] - bbox[0]
         x = (largura - w) / 2
 
-        # Cor principal
         cor = cores[i]
 
-        # --- Glow no nome ---
-        for dx in range(-3, 4):
-            for dy in range(-3, 4):
-                if dx == 0 and dy == 0:
-                    continue
-                draw.text((x + dx, y + dy), texto, font=font_texto, fill=cor)
-
-        # Texto principal (branco por cima pra destacar mais)
-        draw.text((x, y), texto, font=font_texto, fill=cor)
+        # Glow suave: uma sombra preta por trás + borda leve colorida
+        draw.text((x+2, y+2), texto, font=font_texto, fill=(0, 0, 0))   # sombra preta
+        draw.text((x-1, y), texto, font=font_texto, fill=cor)           # leve deslocamento cor
+        draw.text((x+1, y), texto, font=font_texto, fill=cor)           
+        draw.text((x, y), texto, font=font_texto, fill=cor)             # texto principal
 
         y += 20
 
