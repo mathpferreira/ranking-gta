@@ -4,7 +4,7 @@ import time
 import os
 
 def main():
-    url = "https://www.webcup.com.br/campeonato/campeonato-de-cf-global-2025---gta-torcidas-1754250411"
+    url = "https://www.gtatorcidas.net/forum/"
 
     # Configura o Chrome em modo headless
     options = Options()
