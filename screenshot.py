@@ -86,7 +86,7 @@ def main():
     posicoes = ["1", "2", "3"]
 
     for i, (nome, pontos) in enumerate(top3):
-        texto = f"{posicoes[i]} {nome} - {pontos} pontos"
+        texto = f"{posicoes[i]} {nome} | {pontos} pontos"
 
         # centralizar cada linha
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
@@ -100,7 +100,7 @@ def main():
             # escreve o texto numa cor dourada com alpha (só para o glow)
             glow_draw.text((x, y), texto, font=font_texto, fill=(255, 215, 0, 180))
             # aplica blur para espalhar o brilho
-            glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(radius=6))
+            glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(radius=8))
             # compõe na base
             img = Image.alpha_composite(img, glow_layer)
             draw = ImageDraw.Draw(img)  # recria o draw na imagem resultante
