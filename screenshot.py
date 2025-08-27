@@ -62,7 +62,7 @@ def main():
         font_texto = ImageFont.load_default()
 
     # ---- Título (centralizado, stroke para "engrossar" sem borrar) ----
-    titulo = "TOP3 RANKING - EQUIPE DE EVENTOS"
+    titulo = ""
     bbox_t = draw.textbbox((0, 0), titulo, font=font_titulo, stroke_width=2)
     w_t = bbox_t[2] - bbox_t[0]
     x_t = (largura - w_t) / 2
