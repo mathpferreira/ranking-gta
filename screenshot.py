@@ -3,6 +3,7 @@ import requests
 import os
 from datetime import datetime
 
+
 def main():
     # URL do CSV do Google Sheets
     url = "https://docs.google.com/spreadsheets/d/1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw/export?format=csv&gid=0"
@@ -10,26 +11,20 @@ def main():
     response.encoding = "utf-8"
     linhas = response.text.splitlines()
 
-    # Exemplo de dados (Top 3 sem cabeçalho)
-linhas = [
-    "Nome,Pontos",
-    "Player1,150",
-    "Player2,120",
-    "Player3,100",
-]
-top3 = [linha.split(",") for linha in linhas[1:4]]
+    # Pega o Top 3 (ignora cabeçalho)
+    top3 = [linha.split(",") for linha in linhas[1:4]]
 
-# Criar imagem
-largura, altura = 600, 400
-img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
-draw = ImageDraw.Draw(img)
+    # Criar imagem
+    largura, altura = 600, 400
+    img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
+    draw = ImageDraw.Draw(img)
 
-try:
-    font_titulo = ImageFont.truetype("arial.ttf", 36)
-    font_texto = ImageFont.truetype("arial.ttf", 28)
-except:
-    font_titulo = ImageFont.load_default()
-    font_texto = ImageFont.load_default()
+    try:
+        font_titulo = ImageFont.truetype("arial.ttf", 36)
+        font_texto = ImageFont.truetype("arial.ttf", 28)
+    except:
+        font_titulo = ImageFont.load_default()
+        font_texto = ImageFont.load_default()
 
     # --- Título ---
     titulo = "TOP3 RANKING - EQUIPE DE EVENTOS"
@@ -45,12 +40,12 @@ except:
     y = 120
     medalhas = ["🥇", "🥈", "🥉"]
     for i, jogador in enumerate(top3):
-    if len(jogador) < 2:
-        continue
-    nome, pontos = jogador[0], jogador[1]
-    texto = f"{medalhas[i]} {nome} - {pontos} pts"
-    draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
-    y += 70
+        if len(jogador) < 2:
+            continue
+        nome, pontos = jogador[0], jogador[1]
+        texto = f"{medalhas[i]} {nome} - {pontos} pts"
+        draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
+        y += 70
 
     # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
@@ -61,6 +56,7 @@ except:
     # Gerar embed.html com cache-busting
     gerar_embed()
 
+
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
@@ -68,6 +64,7 @@ def gerar_embed():
     with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
     print("✅ embed.html gerado em docs/")
+
 
 if __name__ == "__main__":
     main()
