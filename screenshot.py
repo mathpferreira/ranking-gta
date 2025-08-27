@@ -26,7 +26,7 @@ def main():
         font_texto = ImageFont.load_default()
 
     # Título
-    titulo = "<span style="color:#658a6a;text-shadow: 1px 1px 10px #658a6a;font-weight:600;">TOP3 RANKING - EQUIPE DE EVENTOS</span>"
+    titulo = "<span style=\"color:#658a6a;text-shadow: 1px 1px 10px #658a6a;font-weight:600;\">TOP3 RANKING - EQUIPE DE EVENTOS</span>"
     bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
     w = bbox[2] - bbox[0]
     draw.text(((largura - w) / 2, 30), titulo, font=font_titulo, fill=(255, 215, 0))
