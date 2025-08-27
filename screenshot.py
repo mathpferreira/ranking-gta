@@ -49,7 +49,7 @@ def main():
     top3 = dados[:3]
 
     # ---- Criar imagem base (RGBA para suportar glow) ----
-    largura, altura = 600, 200
+    largura, altura = 600, 180
     img = Image.new("RGBA", (largura, altura), (30, 30, 30, 255))
     draw = ImageDraw.Draw(img)
 
