@@ -4,13 +4,13 @@ import os
 from datetime import datetime
 
 def main():
-    # URL do CSV do Google Sheets (ajuste se necessário)
+    # URL do CSV do Google Sheets
     url = "https://docs.google.com/spreadsheets/d/1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw/export?format=csv&gid=0"
     response = requests.get(url)
     response.encoding = "utf-8"
     linhas = response.text.splitlines()
 
-    # Pegando apenas o Top 3 (ajuste conforme seu sheet)
+    # Pegando apenas o Top 3
     top3 = [linha.split(",") for linha in linhas[1:4]]  # ignora cabeçalho
 
     # Criar imagem
@@ -47,14 +47,16 @@ def main():
     img.save(output_path)
     print(f"✅ Imagem salva em {output_path}")
 
-    # Gerar embed.html com cache-busting
+    # Gerar embed.html
     gerar_embed()
 
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    html_code = f'<img src="https://mathpferreira.github.io/ranking-gta/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    # usa o raw.githubusercontent (sempre instantâneo)
+    img_url = f"https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/ranking.png?nocache={timestamp}"
+    html_code = f'<img src="{img_url}" alt="Ranking GTA">'
     with open("embed.html", "w", encoding="utf-8") as f:
-       f.write(html_code)
+        f.write(html_code)
     print("✅ embed.html gerado com código atualizado!")
 
 if __name__ == "__main__":
