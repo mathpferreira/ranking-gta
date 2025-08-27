@@ -1,62 +1,26 @@
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 import requests
 import os
-import csv
-import re
-from io import StringIO
 from datetime import datetime
-
 
 def main():
     # URL do CSV do Google Sheets
     url = "https://docs.google.com/spreadsheets/d/1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw/export?format=csv&gid=0"
     response = requests.get(url)
     response.encoding = "utf-8"
+    linhas = response.text.splitlines()
 
-    # ---- Parse CSV e ordenar por pontos (desc) ----
-    rows = list(csv.reader(StringIO(response.text)))
-    # Remove linhas vazias
-    rows = [r for r in rows if r and any(c.strip() for c in r)]
+    # Top 3 (ignora cabeçalho)
+    top3 = [linha.split(",") for linha in linhas[1:4]]
 
-    if not rows or len(rows) < 2:
-        raise ValueError("CSV sem dados suficientes.")
-
-    header = [c.strip().lower() for c in rows[0]]
-    # Tenta achar colunas pelo nome; fallback para as 2 primeiras
-    try:
-        idx_nome = header.index("nome")
-    except ValueError:
-        idx_nome = 0
-    try:
-        idx_pontos = header.index("pontos")
-    except ValueError:
-        idx_pontos = 1
-
-    dados = []
-    for r in rows[1:]:
-        if len(r) <= max(idx_nome, idx_pontos):
-            continue
-        nome = r[idx_nome].strip()
-        bruto = r[idx_pontos].strip()
-        # extrai só dígitos (ex.: "1.200" -> "1200")
-        num = re.sub(r"[^\d]", "", bruto)
-        pontos = int(num) if num else 0
-        if nome:
-            dados.append((nome, pontos))
-
-    # Ordena do maior para o menor
-    dados.sort(key=lambda x: x[1], reverse=True)
-    top3 = dados[:3]
-
-    # ---- Criar imagem base (RGBA para suportar glow) ----
-def criar_frame(cor_titulo, cor2, cor3, top3):
+    # Criar imagem
     largura, altura = 600, 400
-    img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
+    img = Image.new("RGB", (largura, altura), color=(20, 20, 20))
     draw = ImageDraw.Draw(img)
 
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 78)
-        font_texto = ImageFont.truetype("arialbd.ttf", 62)
+        font_titulo = ImageFont.truetype("arialbd.ttf", 72)  # Título bem grande
+        font_texto = ImageFont.truetype("arialbd.ttf", 54)   # Jogadores maiores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -65,70 +29,53 @@ def criar_frame(cor_titulo, cor2, cor3, top3):
     titulo = "HALL DA FAMA"
     bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
     w = bbox[2] - bbox[0]
-    x = (largura - w) / 2
-    draw.text((x, 30), titulo, font=font_titulo, fill=cor_titulo)
+    x_titulo = (largura - w) / 2
+    y_titulo = 40
+
+    # Glow RGB (3 sombras: vermelho, verde, azul)
+    for dx, dy, cor in [(3, 0, (255, 0, 0)), (-3, 0, (0, 255, 0)), (0, 3, (0, 128, 255))]:
+        draw.text((x_titulo + dx, y_titulo + dy), titulo, font=font_titulo, fill=cor)
+
+    # Texto principal (branco forte)
+    draw.text((x_titulo, y_titulo), titulo, font=font_titulo, fill=(255, 255, 255))
 
     # --- Jogadores ---
-    y = 150
-    cores = [(218,165,32), cor2, cor3]  # ouro, prata, bronze
+    y = 160
+    cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
             continue
         nome, pontos = jogador[0], jogador[1]
         texto = f"{nome} - {pontos} pontos"
+
+        # Centralizar
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
         w = bbox[2] - bbox[0]
         x = (largura - w) / 2
+
+        # Glow (sombra preta leve pra destacar)
+        draw.text((x + 2, y + 2), texto, font=font_texto, fill=(0, 0, 0))
+        # Texto principal colorido
         draw.text((x, y), texto, font=font_texto, fill=cores[i])
-        y += 65
-    return img
 
-def main():
-    # Dados de exemplo
-    top3 = [
-        ["Player1", "150"],
-        ["Player2", "120"],
-        ["Player3", "100"],
-    ]
+        y += 65  # espaçamento menor
 
-    # Cores RGB para o efeito
-    ciclo_cores = [
-        (255, 0, 0),    # vermelho
-        (0, 255, 0),    # verde
-        (0, 128, 255),  # azul
-        (255, 0, 255),  # roxo
-        (255, 165, 0),  # laranja
-    ]
-
-    frames = []
-    for cor in ciclo_cores:
-        frames.append(criar_frame(cor, (200,200,200), (176,141,87), top3))
-
+    # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
-    output_path = os.path.join("docs", "ranking.gif")
+    output_path = os.path.join("docs", "ranking.png")
+    img.save(output_path)
+    print(f"✅ Imagem salva em {output_path}")
 
-    # Salvar como GIF animado
-    frames[0].save(
-        output_path,
-        save_all=True,
-        append_images=frames[1:],
-        optimize=False,
-        duration=500,  # ms por frame
-        loop=0
-    )
-
-    print(f"✅ GIF animado salvo em {output_path}")
-
-    # Atualizar embed
+    # Gerar embed.html com cache-busting
     gerar_embed()
 
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.gif?nocache={timestamp}" alt="Ranking GTA">'
+    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
     os.makedirs("docs", exist_ok=True)
     with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
-    print("✅ embed.html atualizado para usar ranking.gif")
+    print("✅ embed.html gerado em docs/")
 
 if __name__ == "__main__":
     main()
