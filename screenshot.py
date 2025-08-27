@@ -1,49 +1,61 @@
 from PIL import Image, ImageDraw, ImageFont
-import requests, re, json
+import requests
+import os
+from datetime import datetime
 
 def main():
-    SHEET_ID = "1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw"
-    # Pega diretamente as colunas E, F e G (Top 3 já pronto na planilha)
-    url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tq=select+E,F,G+limit+3"
+    # URL do CSV do Google Sheets (ajuste se necessário)
+    url = "https://docs.google.com/spreadsheets/d/1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw/export?format=csv&gid=0"
+    response = requests.get(url)
+    response.encoding = "utf-8"
+    linhas = response.text.splitlines()
 
-    res = requests.get(url)
-    match = re.search(r"google.visualization.Query.setResponse\((.+)\)", res.text)
-    data = json.loads(match.group(1))
+    # Pegando apenas o Top 3 (ajuste conforme seu sheet)
+    top3 = [linha.split(",") for linha in linhas[1:4]]  # ignora cabeçalho
 
-    rows = data["table"]["rows"]
-    top3 = []
-    for row in rows:
-        jogador = row["c"][0]["v"] if row["c"][0] else ""
-        pontos = row["c"][1]["v"] if row["c"][1] else ""
-        ranking = row["c"][2]["v"] if row["c"][2] else ""
-        top3.append(f"{ranking}º - {jogador} ({pontos} pts)")
-
-    largura, altura = 500, 220
-    img = Image.new("RGB", (largura, altura), "white")
+    # Criar imagem
+    largura, altura = 600, 400
+    img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
     try:
-        font_titulo = ImageFont.truetype("arial.ttf", 28)
-        font_texto = ImageFont.truetype("arial.ttf", 22)
+        font_titulo = ImageFont.truetype("arial.ttf", 36)
+        font_texto = ImageFont.truetype("arial.ttf", 28)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
 
-    # --- título centralizado ---
-    y = 20
+    # Título
     titulo = "🏆 TOP 3 RANKING 🏆"
-    bbox = draw.textbbox((0, 0), titulo, font=font_titulo)  # calcula box do texto
-    w_titulo = bbox[2] - bbox[0]
-    draw.text(((largura - w_titulo) / 2, y), titulo, font=font_titulo, fill="black")
+    bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
+    w = bbox[2] - bbox[0]
+    draw.text(((largura - w) / 2, 30), titulo, font=font_titulo, fill=(255, 215, 0))
 
-    # --- lista ---
-    y += 60
-    for linha in top3:
-        draw.text((50, y), linha, font=font_texto, fill="black")
-        y += 40
+    # Escrever os jogadores
+    y = 120
+    medalhas = ["🥇", "🥈", "🥉"]
+    for i, jogador in enumerate(top3):
+        if len(jogador) < 2:
+            continue
+        nome, pontos = jogador[0], jogador[1]
+        texto = f"{medalhas[i]} {nome} - {pontos} pts"
+        draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
+        y += 70
 
-    img.save("ranking.png")
-    print("✅ Imagem atualizada: ranking.png")
+    # Salvar imagem
+    output_path = os.path.join(os.getcwd(), "ranking.png")
+    img.save(output_path)
+    print(f"✅ Imagem salva em {output_path}")
+
+    # Gerar embed.html com cache-busting
+    gerar_embed()
+
+def gerar_embed():
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    html_code = f'<img src="https://mathpferreira.github.io/ranking-gta/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    with open("embed.html", "w", encoding="utf-8") as f:
+        f.write(html_code)
+    print("✅ embed.html gerado com código atualizado!")
 
 if __name__ == "__main__":
     main()
