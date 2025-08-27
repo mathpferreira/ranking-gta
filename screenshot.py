@@ -55,8 +55,8 @@ def main():
 
     # Fontes
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 78)  # título maior/grosso
-        font_texto = ImageFont.truetype("arialbd.ttf", 62)   # jogadores maiores
+        font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 78)
+        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 62)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
