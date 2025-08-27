@@ -15,13 +15,13 @@ def main():
     top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
-    largura, altura = 500, 300
+    largura, altura = 600, 400
     img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 40)  # título mais grosso
-        font_texto = ImageFont.truetype("arial.ttf", 24)     # fonte mais fina pros jogadores
+        font_titulo = ImageFont.truetype("arialbd.ttf", 48)  # título maior
+        font_texto = ImageFont.truetype("arialbd.ttf", 32)   # jogadores maiores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -31,27 +31,39 @@ def main():
     bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
     w = bbox[2] - bbox[0]
 
-    # Fake bold no título (desenha 4x para engrossar)
+    # Fake bold no título
     for dx in (0, 1):
         for dy in (0, 1):
             draw.text(((largura - w) / 2 + dx, 30 + dy), titulo, font=font_titulo, fill=(101, 138, 106))
 
     # --- Jogadores ---
-    y = 100  # menos espaço entre título e lista
+    y = 80  # mais perto do título
     cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
+    posicoes = ["1º", "2º", "3º"]
+
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
             continue
         nome, pontos = jogador[0], jogador[1]
-        texto = f"{nome} - {pontos} pts"
+        texto = f"{posicoes[i]} {nome} - {pontos} pontos"
 
-        # calcular largura do texto para centralizar
+        # centralizar cada linha
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
         w = bbox[2] - bbox[0]
         x = (largura - w) / 2
 
+        # efeito glow para o 1º lugar
+        if i == 0:
+            glow_color = (255, 215, 0)  # dourado
+            for radius in range(6, 0, -1):  # várias camadas de brilho
+                draw.text((x - radius, y), texto, font=font_texto, fill=glow_color)
+                draw.text((x + radius, y), texto, font=font_texto, fill=glow_color)
+                draw.text((x, y - radius), texto, font=font_texto, fill=glow_color)
+                draw.text((x, y + radius), texto, font=font_texto, fill=glow_color)
+
+        # escreve texto principal
         draw.text((x, y), texto, font=font_texto, fill=cores[i])
-        y += 40  # espaçamento menor entre jogadores
+        y += 35  # espaçamento menor entre jogadores
 
     # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
