@@ -77,38 +77,32 @@ def main():
     )
 
     # ---- Lista de jogadores (centralizados) ----
-    y = 60  # menos espaço entre título e lista
-    cores = [
-        (218, 165, 32, 255),   # ouro #DAA520
-        (215, 215, 215, 255),  # prata #D7D7D7
-        (176, 141, 87, 255),   # bronze #B08D57
-    ]
-    posicoes = ["1", "2", "3"]
+    y = 60
+    cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
+    for i, jogador in enumerate(top3):
+        if len(jogador) < 2:
+            continue
+        nome, pontos = jogador[0], jogador[1]
+        texto = f"{nome} - {pontos} pontos"
 
-    for i, (nome, pontos) in enumerate(top3):
-        texto = f"{posicoes[i]} {nome} - {pontos} pontos"
-
-        # centralizar cada linha
+        # Centralizar
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
         w = bbox[2] - bbox[0]
         x = (largura - w) / 2
 
-        if i == 0:
-            # ---- Glow SUAVE atrás do TOP 1 (sem borrar o texto principal) ----
-            glow_layer = Image.new("RGBA", (largura, altura), (0, 0, 0, 0))
-            glow_draw = ImageDraw.Draw(glow_layer)
-            # escreve o texto numa cor dourada com alpha (só para o glow)
-            glow_draw.text((x, y), texto, font=font_texto, fill=(255, 215, 0, 180))
-            # aplica blur para espalhar o brilho
-            glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(radius=8))
-            # compõe na base
-            img = Image.alpha_composite(img, glow_layer)
-            draw = ImageDraw.Draw(img)  # recria o draw na imagem resultante
+        # Cor principal
+        cor = cores[i]
 
-        # Texto principal (nítido)
-        draw.text((x, y), texto, font=font_texto, fill=cores[i])
+        # --- Glow no nome ---
+        for dx in range(-3, 4):
+            for dy in range(-3, 4):
+                if dx == 0 and dy == 0:
+                    continue
+                draw.text((x + dx, y + dy), texto, font=font_texto, fill=cor)
 
-        # espaçamento ainda menor entre linhas
+        # Texto principal (branco por cima pra destacar mais)
+        draw.text((x, y), texto, font=font_texto, fill=cor)
+
         y += 20
 
     # ---- Salvar imagem ----
