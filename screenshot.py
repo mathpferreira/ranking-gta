@@ -55,8 +55,8 @@ def main():
 
     # Fontes
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 48)  # título maior/grosso
-        font_texto = ImageFont.truetype("arialbd.ttf", 32)   # jogadores maiores
+        font_titulo = ImageFont.truetype("arialbd.ttf", 52)  # título maior/grosso
+        font_texto = ImageFont.truetype("arialbd.ttf", 36)   # jogadores maiores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -83,7 +83,7 @@ def main():
         (215, 215, 215, 255),  # prata #D7D7D7
         (176, 141, 87, 255),   # bronze #B08D57
     ]
-    posicoes = ["1º", "2º", "3º"]
+    posicoes = ["1", "2", "3"]
 
     for i, (nome, pontos) in enumerate(top3):
         texto = f"{posicoes[i]} {nome} - {pontos} pontos"
@@ -109,7 +109,7 @@ def main():
         draw.text((x, y), texto, font=font_texto, fill=cores[i])
 
         # espaçamento ainda menor entre linhas
-        y += 32
+        y += 25
 
     # ---- Salvar imagem ----
     os.makedirs("docs", exist_ok=True)
