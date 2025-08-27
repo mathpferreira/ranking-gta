@@ -101,7 +101,7 @@ def main():
     # ---- Salvar imagem ----
     os.makedirs("docs", exist_ok=True)
     output_path = os.path.join("docs", "ranking.png")
-    img.save(output_path)
+    img.save(output_path, "PNG")
     print(f"✅ Imagem salva em {output_path}")
 
     # ---- Gerar embed.html com cache-busting ----
