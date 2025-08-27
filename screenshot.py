@@ -92,11 +92,9 @@ def main():
 
         cor = cores[i]
 
-        # Glow suave: uma sombra preta por trás + borda leve colorida
-        draw.text((x+2, y+2), texto, font=font_texto, fill=(0, 0, 0))   # sombra preta
-        draw.text((x-1, y), texto, font=font_texto, fill=cor)           # leve deslocamento cor
-        draw.text((x+1, y), texto, font=font_texto, fill=cor)           
-        draw.text((x, y), texto, font=font_texto, fill=cor)             # texto principal
+        # "Glow" estilo título → só uma sombra deslocada
+        draw.text((x+3, y+3), texto, font=font_texto, fill=(0, 0, 0))  # sombra preta discreta
+        draw.text((x, y), texto, font=font_texto, fill=cor)            # texto principal
 
         y += 20
 
