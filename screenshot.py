@@ -55,8 +55,8 @@ def main():
 
     # Fontes
     try:
-        font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 32)
-        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 22)
+        font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 22)
+        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 16)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -86,7 +86,7 @@ def main():
     posicoes = ["1", "2", "3"]
 
     for i, (nome, pontos) in enumerate(top3):
-        texto = f"{posicoes[i]} {nome} | {pontos} pontos"
+        texto = f"{posicoes[i]} {nome} - {pontos} pontos"
 
         # centralizar cada linha
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
