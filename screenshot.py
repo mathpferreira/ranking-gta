@@ -50,7 +50,7 @@ def main():
 
     # ---- Criar imagem base (RGBA para suportar glow) ----
     largura, altura = 600, 180
-    img = Image.new("RGBA", (largura, altura), (30, 30, 30, 255))
+    img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
     # Fontes
