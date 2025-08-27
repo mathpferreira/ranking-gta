@@ -49,74 +49,86 @@ def main():
     top3 = dados[:3]
 
     # ---- Criar imagem base (RGBA para suportar glow) ----
+def criar_frame(cor_titulo, cor2, cor3, top3):
     largura, altura = 600, 400
-    img = Image.new("RGBA", (largura, altura), (30, 30, 30, 255))
+    img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
-    # Fontes
     try:
-        font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 22)
-        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 16)
+        font_titulo = ImageFont.truetype("arialbd.ttf", 78)
+        font_texto = ImageFont.truetype("arialbd.ttf", 62)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
 
-   # Paleta RGB para o brilho do título
-    cores_rgb = [(255, 0, 0), (0, 255, 0), (0, 120, 255), (255, 0, 255)]
+    # --- Título ---
+    titulo = "HALL DA FAMA"
+    bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
+    w = bbox[2] - bbox[0]
+    x = (largura - w) / 2
+    draw.text((x, 30), titulo, font=font_titulo, fill=cor_titulo)
+
+    # --- Jogadores ---
+    y = 150
+    cores = [(218,165,32), cor2, cor3]  # ouro, prata, bronze
+    for i, jogador in enumerate(top3):
+        if len(jogador) < 2:
+            continue
+        nome, pontos = jogador[0], jogador[1]
+        texto = f"{nome} - {pontos} pontos"
+        bbox = draw.textbbox((0, 0), texto, font=font_texto)
+        w = bbox[2] - bbox[0]
+        x = (largura - w) / 2
+        draw.text((x, y), texto, font=font_texto, fill=cores[i])
+        y += 65
+    return img
+
+def main():
+    # Dados de exemplo
+    top3 = [
+        ["Player1", "150"],
+        ["Player2", "120"],
+        ["Player3", "100"],
+    ]
+
+    # Cores RGB para o efeito
+    ciclo_cores = [
+        (255, 0, 0),    # vermelho
+        (0, 255, 0),    # verde
+        (0, 128, 255),  # azul
+        (255, 0, 255),  # roxo
+        (255, 165, 0),  # laranja
+    ]
 
     frames = []
-    for frame_idx, cor in enumerate(cores_rgb):
-        img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
-        draw = ImageDraw.Draw(img)
+    for cor in ciclo_cores:
+        frames.append(criar_frame(cor, (200,200,200), (176,141,87), top3))
 
-        # --- Título ---
-        titulo = "HALL DA FAMA"
-        bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
-        w = bbox[2] - bbox[0]
-        # Brilho (camada "embaçada" atrás do texto)
-        draw.text(((largura - w) / 2, 40), titulo, font=font_titulo, fill=cor)
-        # Título branco por cima
-        draw.text(((largura - w) / 2, 40), titulo, font=font_titulo, fill=(255, 255, 255))
-
-        # --- Jogadores ---
-        y = 150
-        cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
-        for i, jogador in enumerate(top3):
-            if len(jogador) < 2:
-                continue
-            nome, pontos = jogador[0], jogador[1]
-            texto = f"{nome} - {pontos} pontos"
-
-            bbox = draw.textbbox((0, 0), texto, font=font_texto)
-            w = bbox[2] - bbox[0]
-
-            # Aplica brilho pulsante no 2º e 3º
-            if i > 0:
-                glow = tuple(min(255, c + frame_idx*40) for c in cores[i])  # aumenta brilho
-                draw.text(((largura - w) / 2, y), texto, font=font_texto, fill=glow)
-
-            # Nome principal
-            draw.text(((largura - w) / 2, y), texto, font=font_texto, fill=cores[i])
-            y += 70
-
-        frames.append(img)
-
-    # Salvar como GIF animado
     os.makedirs("docs", exist_ok=True)
     output_path = os.path.join("docs", "ranking.gif")
-    frames[0].save(output_path, save_all=True, append_images=frames[1:], optimize=True, duration=500, loop=0)
+
+    # Salvar como GIF animado
+    frames[0].save(
+        output_path,
+        save_all=True,
+        append_images=frames[1:],
+        optimize=False,
+        duration=500,  # ms por frame
+        loop=0
+    )
+
     print(f"✅ GIF animado salvo em {output_path}")
 
+    # Atualizar embed
     gerar_embed()
 
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.gif?nocache={timestamp}" alt="Ranking GTA">'
     os.makedirs("docs", exist_ok=True)
     with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
-    print("✅ embed.html gerado em docs/")
-
+    print("✅ embed.html atualizado para usar ranking.gif")
 
 if __name__ == "__main__":
     main()
