@@ -1,24 +1,28 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
-
-URL = "https://www.webcup.com.br/campeonato/campeonato-de-cf-global-2025---gta-torcidas-1754250411"
+import os
 
 def main():
+    url = "https://www.webcup.com.br/campeonato/campeonato-de-cf-global-2025---gta-torcidas-1754250411"
+
+    # Configura o Chrome em modo headless
     options = Options()
-    options.add_argument("--headless")  # roda sem abrir janela
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
     driver = webdriver.Chrome(options=options)
-    driver.set_window_size(1920, 1080)  # resolução grande
+    driver.set_window_size(1920, 1080)
 
-    print("🔄 Acessando o Webcup...")
-    driver.get(URL)
-    time.sleep(5)  # espera a página carregar (pode aumentar se ficar em branco)
+    driver.get(url)
+    time.sleep(5)  # espera a tabela carregar
 
-    driver.save_screenshot("ranking.png")
-    print("✅ Screenshot completo salvo como ranking.png")
+    # Caminho absoluto para salvar na raiz do repositório
+    output_path = os.path.join(os.getcwd(), "ranking.png")
+
+    driver.save_screenshot(output_path)
+    print(f"✅ Screenshot salva em: {output_path}")
 
     driver.quit()
 
