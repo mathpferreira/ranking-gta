@@ -109,7 +109,7 @@ def main():
         draw.text((x, y), texto, font=font_texto, fill=cores[i])
 
         # espaçamento ainda menor entre linhas
-        y += 25
+        y += 20
 
     # ---- Salvar imagem ----
     os.makedirs("docs", exist_ok=True)
