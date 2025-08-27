@@ -20,8 +20,8 @@ def main():
     draw = ImageDraw.Draw(img)
 
     try:
-        font_titulo = ImageFont.truetype("arial.ttf", 36)
-        font_texto = ImageFont.truetype("arial.ttf", 28)
+        font_titulo = ImageFont.truetype("arialbd.ttf", 36)  # versão bold
+        font_texto = ImageFont.truetype("arialbd.ttf", 28)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -31,21 +31,25 @@ def main():
     bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
     w = bbox[2] - bbox[0]
 
-    # Sombra do título (deslocada 2px em cinza escuro)
+    # Sombra do título
     draw.text(((largura - w) / 2 + 2, 32), titulo, font=font_titulo, fill=(20, 20, 20))
-    # Texto principal em verde (#658a6a)
     draw.text(((largura - w) / 2, 30), titulo, font=font_titulo, fill=(101, 138, 106))
 
     # --- Jogadores ---
     y = 120
-    medalhas = ["🥇", "🥈", "🥉"]
+    cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
             continue
         nome, pontos = jogador[0], jogador[1]
-        texto = f"{medalhas[i]} {nome} - {pontos} pts"
-        draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
-        y += 70
+        texto = f"{nome} - {pontos} pontos"
+
+        # Fake bold se não tiver arialbd.ttf
+        for dx in (0, 1):
+            for dy in (0, 1):
+                draw.text((80 + dx, y + dy), texto, font=font_texto, fill=cores[i])
+
+        y += 50  # espaçamento menor entre linhas
 
     # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
@@ -53,7 +57,6 @@ def main():
     img.save(output_path)
     print(f"✅ Imagem salva em {output_path}")
 
-    # Gerar embed.html com cache-busting
     gerar_embed()
 
 
