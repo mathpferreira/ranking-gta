@@ -83,7 +83,7 @@ def main():
         if len(jogador) < 2:
             continue
         nome, pontos = jogador[0], jogador[1]
-        texto = f"{nome} - {pontos} pontos"
+        texto = f"{i+1}º {nome} - {pontos} pontos"
 
         # Centralizar
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
