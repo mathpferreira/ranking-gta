@@ -49,7 +49,7 @@ def main():
     top3 = dados[:3]
 
     # ---- Criar imagem base (RGBA para suportar glow) ----
-    largura, altura = 200, 150
+    largura, altura = 300, 200
     img = Image.new("RGBA", (largura, altura), (30, 30, 30, 255))
     draw = ImageDraw.Draw(img)
 
@@ -77,7 +77,7 @@ def main():
     )
 
     # ---- Lista de jogadores (centralizados) ----
-    y = 75  # menos espaço entre título e lista
+    y = 50  # menos espaço entre título e lista
     cores = [
         (218, 165, 32, 255),   # ouro #DAA520
         (215, 215, 215, 255),  # prata #D7D7D7
