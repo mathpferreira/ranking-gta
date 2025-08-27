@@ -61,65 +61,53 @@ def main():
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
 
-    # ---- Título (centralizado, stroke para "engrossar" sem borrar) ----
-    titulo = "TOP3 RANKING - EQUIPE DE EVENTOS"
-    bbox_t = draw.textbbox((0, 0), titulo, font=font_titulo, stroke_width=2)
-    w_t = bbox_t[2] - bbox_t[0]
-    x_t = (largura - w_t) / 2
-    y_t = 24
-    draw.text(
-        (x_t, y_t),
-        titulo,
-        font=font_titulo,
-        fill=(101, 138, 106, 255),       # verde
-        stroke_width=2,
-        stroke_fill=(15, 15, 15, 255),   # contorno escuro
-    )
+   # Paleta RGB para o brilho do título
+    cores_rgb = [(255, 0, 0), (0, 255, 0), (0, 120, 255), (255, 0, 255)]
 
-    # ---- Lista de jogadores (centralizados) ----
-    y = 60  # menos espaço entre título e lista
-    cores = [
-        (218, 165, 32, 255),   # ouro #DAA520
-        (215, 215, 215, 255),  # prata #D7D7D7
-        (176, 141, 87, 255),   # bronze #B08D57
-    ]
-    posicoes = ["1", "2", "3"]
+    frames = []
+    for frame_idx, cor in enumerate(cores_rgb):
+        img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
+        draw = ImageDraw.Draw(img)
 
-    for i, (nome, pontos) in enumerate(top3):
-        texto = f"{posicoes[i]} {nome} - {pontos} pontos"
-
-        # centralizar cada linha
-        bbox = draw.textbbox((0, 0), texto, font=font_texto)
+        # --- Título ---
+        titulo = "HALL DA FAMA"
+        bbox = draw.textbbox((0, 0), titulo, font=font_titulo)
         w = bbox[2] - bbox[0]
-        x = (largura - w) / 2
+        # Brilho (camada "embaçada" atrás do texto)
+        draw.text(((largura - w) / 2, 40), titulo, font=font_titulo, fill=cor)
+        # Título branco por cima
+        draw.text(((largura - w) / 2, 40), titulo, font=font_titulo, fill=(255, 255, 255))
 
-        if i == 0:
-            # ---- Glow SUAVE atrás do TOP 1 (sem borrar o texto principal) ----
-            glow_layer = Image.new("RGBA", (largura, altura), (0, 0, 0, 0))
-            glow_draw = ImageDraw.Draw(glow_layer)
-            # escreve o texto numa cor dourada com alpha (só para o glow)
-            glow_draw.text((x, y), texto, font=font_texto, fill=(255, 215, 0, 180))
-            # aplica blur para espalhar o brilho
-            glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(radius=8))
-            # compõe na base
-            img = Image.alpha_composite(img, glow_layer)
-            draw = ImageDraw.Draw(img)  # recria o draw na imagem resultante
+        # --- Jogadores ---
+        y = 150
+        cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
+        for i, jogador in enumerate(top3):
+            if len(jogador) < 2:
+                continue
+            nome, pontos = jogador[0], jogador[1]
+            texto = f"{nome} - {pontos} pontos"
 
-        # Texto principal (nítido)
-        draw.text((x, y), texto, font=font_texto, fill=cores[i])
+            bbox = draw.textbbox((0, 0), texto, font=font_texto)
+            w = bbox[2] - bbox[0]
 
-        # espaçamento ainda menor entre linhas
-        y += 20
+            # Aplica brilho pulsante no 2º e 3º
+            if i > 0:
+                glow = tuple(min(255, c + frame_idx*40) for c in cores[i])  # aumenta brilho
+                draw.text(((largura - w) / 2, y), texto, font=font_texto, fill=glow)
 
-    # ---- Salvar imagem ----
+            # Nome principal
+            draw.text(((largura - w) / 2, y), texto, font=font_texto, fill=cores[i])
+            y += 70
+
+        frames.append(img)
+
+    # Salvar como GIF animado
     os.makedirs("docs", exist_ok=True)
-    output_path = os.path.join("docs", "ranking.png")
-    img.save(output_path)
-    print(f"✅ Imagem salva em {output_path}")
+    output_path = os.path.join("docs", "ranking.gif")
+    frames[0].save(output_path, save_all=True, append_images=frames[1:], optimize=True, duration=500, loop=0)
+    print(f"✅ GIF animado salvo em {output_path}")
 
-    # ---- Gerar embed.html com cache-busting ----
     gerar_embed()
-
 
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
