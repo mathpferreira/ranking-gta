@@ -15,13 +15,13 @@ def main():
     top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
-    largura, altura = 600, 400
+    largura, altura = 500, 300
     img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 48)  # título maior
-        font_texto = ImageFont.truetype("arialbd.ttf", 32)   # jogadores maiores
+        font_titulo = ImageFont.truetype("arialbd.ttf", 52)  # título maior
+        font_texto = ImageFont.truetype("arialbd.ttf", 36)   # jogadores maiores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
@@ -37,7 +37,7 @@ def main():
             draw.text(((largura - w) / 2 + dx, 30 + dy), titulo, font=font_titulo, fill=(101, 138, 106))
 
     # --- Jogadores ---
-    y = 80  # mais perto do título
+    y = 60  # mais perto do título
     cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
     posicoes = ["1º", "2º", "3º"]
 
@@ -63,7 +63,7 @@ def main():
 
         # escreve texto principal
         draw.text((x, y), texto, font=font_texto, fill=cores[i])
-        y += 35  # espaçamento menor entre jogadores
+        y += 20  # espaçamento menor entre jogadores
 
     # Salvar imagem dentro de docs/
     os.makedirs("docs", exist_ok=True)
