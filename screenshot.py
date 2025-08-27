@@ -53,9 +53,9 @@ def main():
 def gerar_embed():
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     html_code = f'<img src="https://mathpferreira.github.io/ranking-gta/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
-    with open("embed.html", "w", encoding="utf-8") as f:
-        f.write(html_code)
-    print("✅ embed.html gerado com código atualizado!")
+    with open("embed.txt", "w", encoding="utf-8") as f:
+    f.write(html_code)
+    print("✅ embed.txt gerado com código atualizado!")
 
 if __name__ == "__main__":
     main()
