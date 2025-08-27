@@ -31,4 +31,12 @@ jobs:
           PY
 
       - name: Run script
-        run: python screenshot.py   # se o arquivo for ranking.py, troque a
+        run: python screenshot.py   # se o arquivo for ranking.py, troque aqui
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add ranking.png
+          git diff --cached --quiet || git commit -m "Update ranking image"
+          git push
