@@ -49,14 +49,14 @@ def main():
     top3 = dados[:3]
 
     # ---- Criar imagem base (RGBA para suportar glow) ----
-    largura, altura = 600, 180
+    largura, altura = 400, 180
     img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
     draw = ImageDraw.Draw(img)
 
     # Fontes
     try:
         font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 22)
-        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 16)
+        font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 18)
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
