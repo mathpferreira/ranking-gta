@@ -55,8 +55,8 @@ def main():
 
     # Fontes
     try:
-        font_titulo = ImageFont.truetype("arialbd.ttf", 52)  # título maior/grosso
-        font_texto = ImageFont.truetype("arialbd.ttf", 36)   # jogadores maiores
+        font_titulo = ImageFont.truetype("arialbd.ttf", 72)  # título maior/grosso
+        font_texto = ImageFont.truetype("arialbd.ttf", 54)   # jogadores maiores
     except:
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
