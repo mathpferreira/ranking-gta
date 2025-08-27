@@ -4,14 +4,14 @@ import os
 from datetime import datetime
 
 def main():
-    # URL do CSV do Google Sheets
+    # URL do CSV do Google Sheets (ajuste se necessário)
     url = "https://docs.google.com/spreadsheets/d/1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw/export?format=csv&gid=0"
     response = requests.get(url)
     response.encoding = "utf-8"
     linhas = response.text.splitlines()
 
-    # Pegando apenas o Top 3
-    top3 = [linha.split(",") for linha in linhas[1:4]]  # ignora cabeçalho
+    # Pegando apenas o Top 3 (ignora cabeçalho)
+    top3 = [linha.split(",") for linha in linhas[1:4]]
 
     # Criar imagem
     largura, altura = 600, 400
@@ -42,22 +42,25 @@ def main():
         draw.text((80, y), texto, font=font_texto, fill=(255, 255, 255))
         y += 70
 
-    # Salvar imagem
-    output_path = os.path.join(os.getcwd(), "ranking.png")
+    # Garantir que a pasta docs existe
+    docs_path = os.path.join(os.getcwd(), "docs")
+    os.makedirs(docs_path, exist_ok=True)
+
+    # Salvar imagem no docs/
+    output_path = os.path.join(docs_path, "ranking.png")
     img.save(output_path)
     print(f"✅ Imagem salva em {output_path}")
 
-    # Gerar embed.html
-    gerar_embed()
+    # Gerar embed.html dentro de docs/
+    gerar_embed(docs_path)
 
-def gerar_embed():
+def gerar_embed(docs_path):
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    # usa o raw.githubusercontent (sempre instantâneo)
-    img_url = f"https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/ranking.png?nocache={timestamp}"
-    html_code = f'<img src="{img_url}" alt="Ranking GTA">'
-    with open("embed.html", "w", encoding="utf-8") as f:
+    html_code = f'<img src="https://mathpferreira.github.io/ranking-gta/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    embed_path = os.path.join(docs_path, "embed.html")
+    with open(embed_path, "w", encoding="utf-8") as f:
         f.write(html_code)
-    print("✅ embed.html gerado com código atualizado!")
+    print(f"✅ embed.html gerado em {embed_path}")
 
 if __name__ == "__main__":
     main()
