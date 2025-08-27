@@ -1,22 +1,15 @@
 name: Atualizar Ranking
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"  # roda a cada 10 minutos
-  workflow_dispatch:        # permite rodar manualmente também
+    - cron: "*/30 * * * *"  # roda a cada 30 minutos
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Configurar Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+      - uses: actions/checkout@v3
 
       - name: Instalar dependências
         run: |
@@ -26,10 +19,10 @@ jobs:
       - name: Executar script
         run: python screenshot.py
 
-      - name: Commit e Push das mudanças
+      - name: Commit e push
         run: |
-          git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add ranking.png embed.html
-          git commit -m "🔄 Atualizando ranking automático"
+          git config --global user.name "github-actions[bot]"
+          git add docs/
+          git commit -m "Atualiza ranking automático" || echo "Nada para commitar"
           git push
