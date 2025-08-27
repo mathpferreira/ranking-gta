@@ -3,7 +3,7 @@ import requests, re, json
 
 def main():
     SHEET_ID = "1DS24AMuYnkEJTDVaNHeAB1gGEoz6YOew4IckQD7JjOw"
-    # Pega diretamente as colunas E, F e G (top 3 já montado)
+    # Pega diretamente as colunas E, F e G (Top 3 já pronto na planilha)
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tq=select+E,F,G+limit+3"
 
     res = requests.get(url)
@@ -29,10 +29,14 @@ def main():
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
 
+    # --- título centralizado ---
     y = 20
-    w_titulo, _ = draw.textsize("🏆 TOP 3 RANKING 🏆", font=font_titulo)
-    draw.text(((largura - w_titulo) / 2, y), "🏆 TOP 3 RANKING 🏆", font=font_titulo, fill="black")
+    titulo = "🏆 TOP 3 RANKING 🏆"
+    bbox = draw.textbbox((0, 0), titulo, font=font_titulo)  # calcula box do texto
+    w_titulo = bbox[2] - bbox[0]
+    draw.text(((largura - w_titulo) / 2, y), titulo, font=font_titulo, fill="black")
 
+    # --- lista ---
     y += 60
     for linha in top3:
         draw.text((50, y), linha, font=font_texto, fill="black")
