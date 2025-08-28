@@ -105,12 +105,16 @@ def main():
 
 
 def gerar_embed():
-    html_code = '<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png" alt="Ranking GTA">'
+    from datetime import datetime
+
+    # Gera timestamp único para quebrar cache
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    
     os.makedirs("docs", exist_ok=True)
     with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
     print("✅ embed.html gerado em docs/")
-
 
 if __name__ == "__main__":
     main()
