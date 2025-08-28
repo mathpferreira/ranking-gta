@@ -73,7 +73,7 @@ def main():
     )
 
     # ---- Lista jogadores ----
-    y = 60
+    y = 50
     cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
