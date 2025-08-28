@@ -5,6 +5,7 @@ import csv
 import re
 from io import StringIO
 from datetime import datetime
+import random
 
 
 def main():
@@ -15,14 +16,12 @@ def main():
 
     # ---- Parse CSV e ordenar por pontos (desc) ----
     rows = list(csv.reader(StringIO(response.text)))
-    # Remove linhas vazias
     rows = [r for r in rows if r and any(c.strip() for c in r)]
 
     if not rows or len(rows) < 2:
         raise ValueError("CSV sem dados suficientes.")
 
     header = [c.strip().lower() for c in rows[0]]
-    # Tenta achar colunas pelo nome; fallback para as 2 primeiras
     try:
         idx_nome = header.index("nome")
     except ValueError:
@@ -38,22 +37,19 @@ def main():
             continue
         nome = r[idx_nome].strip()
         bruto = r[idx_pontos].strip()
-        # extrai só dígitos (ex.: "1.200" -> "1200")
         num = re.sub(r"[^\d]", "", bruto)
         pontos = int(num) if num else 0
         if nome:
             dados.append((nome, pontos))
 
-    # Ordena do maior para o menor
     dados.sort(key=lambda x: x[1], reverse=True)
     top3 = dados[:3]
 
-    # ---- Criar imagem base (RGBA para suportar glow) ----
+    # ---- Criar imagem base ----
     largura, altura = 460, 150
-    img = Image.new("RGB", (largura, altura), color=(30, 30, 30))
+    img = Image.new("RGBA", (largura, altura), color=(30, 30, 30, 255))
     draw = ImageDraw.Draw(img)
 
-    # Fontes
     try:
         font_titulo = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 22)
         font_texto = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 18)
@@ -61,7 +57,7 @@ def main():
         font_titulo = ImageFont.load_default()
         font_texto = ImageFont.load_default()
 
-    # ---- Título (centralizado, stroke para "engrossar" sem borrar) ----
+    # ---- Título ----
     titulo = ""
     bbox_t = draw.textbbox((0, 0), titulo, font=font_titulo, stroke_width=2)
     w_t = bbox_t[2] - bbox_t[0]
@@ -71,32 +67,33 @@ def main():
         (x_t, y_t),
         titulo,
         font=font_titulo,
-        fill=(101, 138, 106, 255),       # verde
+        fill=(101, 138, 106, 255),
         stroke_width=2,
-        stroke_fill=(15, 15, 15, 255),   # contorno escuro
+        stroke_fill=(15, 15, 15, 255),
     )
 
-    # ---- Lista de jogadores (centralizados) ----
+    # ---- Lista jogadores ----
     y = 60
-    cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]  # ouro, prata, bronze
+    cores = [(218, 165, 32), (215, 215, 215), (176, 141, 87)]
     for i, jogador in enumerate(top3):
         if len(jogador) < 2:
             continue
-        nome, pontos = jogador[0], jogador[1]
+        nome, pontos = jogador
         texto = f"{i+1}º {nome} - {pontos} pontos"
 
-        # Centralizar
         bbox = draw.textbbox((0, 0), texto, font=font_texto)
         w = bbox[2] - bbox[0]
         x = (largura - w) / 2
 
         cor = cores[i]
-
-        # "Glow" estilo título → só uma sombra deslocada
-        draw.text((x+3, y+3), texto, font=font_texto, fill=(0, 0, 0))  # sombra preta discreta
-        draw.text((x, y), texto, font=font_texto, fill=cor)            # texto principal
+        draw.text((x+2, y+2), texto, font=font_texto, fill=(0, 0, 0, 150))
+        draw.text((x, y), texto, font=font_texto, fill=cor)
 
         y += 20
+
+    # ---- Forçar mudança invisível ----
+    rand_alpha = random.randint(0, 255)
+    img.putpixel((largura-1, altura-1), (0, 0, 0, rand_alpha))
 
     # ---- Salvar imagem ----
     os.makedirs("docs", exist_ok=True)
@@ -104,13 +101,11 @@ def main():
     img.save(output_path, "PNG")
     print(f"✅ Imagem salva em {output_path}")
 
-    # ---- Gerar embed.html com cache-busting ----
     gerar_embed()
 
 
 def gerar_embed():
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    html_code = f'<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png?nocache={timestamp}" alt="Ranking GTA">'
+    html_code = '<img src="https://raw.githubusercontent.com/mathpferreira/ranking-gta/main/docs/ranking.png" alt="Ranking GTA">'
     os.makedirs("docs", exist_ok=True)
     with open("docs/embed.html", "w", encoding="utf-8") as f:
         f.write(html_code)
