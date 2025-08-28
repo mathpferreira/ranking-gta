@@ -2,7 +2,7 @@ name: Update Ranking
 
 on:
   schedule:
-    - cron: "*/2 * * * *"   # tenta a cada 2 min
+    - cron: "*/15 * * * *"   # tenta a cada 15 min
   workflow_dispatch: # permite rodar manualmente
 
 jobs:
